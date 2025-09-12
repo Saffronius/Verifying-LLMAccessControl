@@ -1,0 +1,18 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:ListBucketVersions"
+      ],
+      "Resource": "arn:aws:s3:::singlecomm.recordings",
+      "Condition": {
+        "ForAllValues:StringLikeIfExists": {
+          "s3:prefix": "0001"
+        }
+      }
+    }
+  ]
+}

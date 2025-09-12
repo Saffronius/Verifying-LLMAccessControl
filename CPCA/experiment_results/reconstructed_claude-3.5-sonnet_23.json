@@ -1,0 +1,70 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ViewS3Buckets",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListAllMyBuckets",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ListSpecificFolders",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::bluebolt",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "",
+            "Production and Processing/",
+            "Production and Processing/${aws:username}/",
+            "Company Shared/"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "ListCompanySharedContents",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::bluebolt",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": "Company Shared/*"
+        }
+      }
+    },
+    {
+      "Sid": "ListOwnUserFolder",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::bluebolt",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": "Production and Processing/${aws:username}/*"
+        }
+      }
+    },
+    {
+      "Sid": "AllActionsInCompanyShared",
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": "arn:aws:s3:::bluebolt/Company Shared/*"
+    },
+    {
+      "Sid": "AllActionsInOwnUserFolder",
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": "arn:aws:s3:::bluebolt/Production and Processing/${aws:username}/*"
+    },
+    {
+      "Sid": "DenyAccessToManagementFolder",
+      "Effect": "Deny",
+      "Action": "s3:*",
+      "Resource": "arn:aws:s3:::bluebolt/Management/*"
+    }
+  ]
+}

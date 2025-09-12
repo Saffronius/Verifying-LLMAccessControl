@@ -1,0 +1,52 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowSpecificRefererAndIP",
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::example/*",
+            "Condition": {
+                "StringLike": {
+                    "aws:Referer": [
+                        "http://www.example.com/*",
+                        "https://www.example.com/*",
+                        "http://example.com/*",
+                        "https://example.com/*",
+                        "https://example.herokuapp.com/*",
+                        "https://d111111abcdef8.cloudfront.net/*",
+                        "https://d111111abcdef9.cloudfront.net/*"
+                    ]
+                },
+                "IpAddress": {
+                    "aws:SourceIp": "219.77.225.236"
+                }
+            }
+        },
+        {
+            "Sid": "DenyUnlessSpecificRefererAndIP",
+            "Effect": "Deny",
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::example/*",
+            "Condition": {
+                "StringNotLike": {
+                    "aws:Referer": [
+                        "http://www.example.com/*",
+                        "https://www.example.com/*",
+                        "http://example.com/*",
+                        "https://example.com/*",
+                        "https://example.herokuapp.com/*",
+                        "https://d111111abcdef8.cloudfront.net/*",
+                        "https://d111111abcdef9.cloudfront.net/*"
+                    ]
+                },
+                "NotIpAddress": {
+                    "aws:SourceIp": "219.77.225.236"
+                },
+                "StringNotEquals": {
+                    "aws:Service": "lambda.amazonaws.com"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowPutForAllS3TestfilesLambda",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::999999999999:user/myuser"
+      },
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::prod--testfiles",
+        "arn:aws:s3:::prod--testfiles/*"
+      ]
+    },
+    {
+      "Sid": "DenyPutForAllS3TestfilesExceptLambda",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::prod--testfiles/*",
+      "NotPrincipal": [
+        "arn:aws:iam::999999999999:root",
+        "arn:aws:iam::999999999999:user/myuser"
+      ]
+    }
+  ]
+}

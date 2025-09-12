@@ -1,0 +1,85 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowEC2ActionsInUSWest2",
+      "Effect": "Allow",
+      "Action": "ec2:*",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "ec2:Region": "us-west-2"
+        }
+      }
+    },
+    {
+      "Sid": "DenyEC2InfrastructureModifications",
+      "Effect": "Deny",
+      "Action": [
+        "ec2:CreateNetworkAcl",
+        "ec2:DeleteNetworkAcl",
+        "ec2:CreateNetworkAclEntry",
+        "ec2:DeleteNetworkAclEntry",
+        "ec2:ReplaceNetworkAclEntry",
+        "ec2:CreateInternetGateway",
+        "ec2:DeleteInternetGateway",
+        "ec2:AttachInternetGateway",
+        "ec2:DetachInternetGateway",
+        "ec2:CreateNatGateway",
+        "ec2:DeleteNatGateway",
+        "ec2:CreateCustomerGateway",
+        "ec2:DeleteCustomerGateway",
+        "ec2:CreateRouteTable",
+        "ec2:DeleteRouteTable",
+        "ec2:CreateSubnet",
+        "ec2:DeleteSubnet",
+        "ec2:CreateVpc",
+        "ec2:DeleteVpc",
+        "ec2:CreateVpnConnection",
+        "ec2:DeleteVpnConnection",
+        "ec2:CreateVpcPeeringConnection",
+        "ec2:DeleteVpcPeeringConnection",
+        "ec2:AllocateAddress",
+        "ec2:ReleaseAddress",
+        "ec2:AssociateAddress",
+        "ec2:DisassociateAddress",
+        "ec2:AttachInternetGateway",
+        "ec2:DetachInternetGateway",
+        "ec2:CreateReservedInstancesListing",
+        "ec2:CreatePlacementGroup",
+        "ec2:DeletePlacementGroup",
+        "ec2:RequestSpotFleet"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "FullAccessToSpecificS3Bucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::projectx12345",
+        "arn:aws:s3:::projectx12345/*"
+      ]
+    },
+    {
+      "Sid": "ReadOnlyS3Actions",
+      "Effect": "Allow",
+      "Action": [
+        "s3:Get*",
+        "s3:List*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowBillingAndUsageView",
+      "Effect": "Allow",
+      "Action": [
+        "aws-portal:ViewBilling",
+        "aws-portal:ViewUsage"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

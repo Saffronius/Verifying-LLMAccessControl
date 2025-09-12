@@ -1,0 +1,108 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+*.env
+!.env.example
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Test outputs
+*.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# Data files (but keep sample data)
+*.csv
+!*/sample_*.csv
+!*/example_*.csv
+
+# Results and temporary files
+results/
+temp/
+tmp/
+*.tmp
+*.temp
+
+# Model checkpoints and outputs
+checkpoint/
+checkpoints/
+*.ckpt
+*.pkl
+*.pickle
+*.h5
+*.model
+
+# Progress files
+*progress.json
+*checkpoint*.json
+
+# Keep important documentation
+!README.md
+!DOCKER_README.md
+!REVIEWER_QUICKSTART.md
+!FEATURE_COMPLETE.md
+!TEST_RESULTS.md
+
+# Keep example configurations
+!.env.example
+!*/examples/
+
+# Quacky generated files
+P1_not_P2.models
+not_P1_P2.models
+response.txt
+gen_pol.json
+output_*.smt2
+
+# Docker volumes (when running locally)
+artifacts/results/
+artifacts/temp/
+
+# But keep the quacky directory
+!quacky/
+!artifacts/quacky/

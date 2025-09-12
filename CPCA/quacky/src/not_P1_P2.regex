@@ -1,0 +1,1 @@
+arn:aws:ec2:[^:]*:[^:]*:[^:]*:(instance|volume)/[^ ]*

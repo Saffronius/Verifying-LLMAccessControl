@@ -1,0 +1,69 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowListAllBucketsAndGetLocation",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListAllMyBuckets",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::*"
+    },
+    {
+      "Sid": "AllowListMyBucketRoot",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::my-bucket",
+      "Condition": {
+        "StringEquals": {
+          "s3:prefix": ""
+        },
+        "StringEqualsIfExists": {
+          "s3:delimiter": "/"
+        }
+      }
+    },
+    {
+      "Sid": "RestrictListBucketPrefixes",
+      "Effect": "Deny",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::my-bucket",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:prefix": [
+            "",
+            "home/",
+            "home/Jas/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AllowListSpecificPrefixes",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::my-bucket",
+      "Condition": {
+        "StringEquals": {
+          "s3:prefix": [
+            "",
+            "home/",
+            "home/Jas/"
+          ]
+        },
+        "StringEqualsIfExists": {
+          "s3:delimiter": "/"
+        }
+      }
+    },
+    {
+      "Sid": "FullAccessToHomeJasFolderObjects",
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::my-bucket/home/Jas/*"
+      ]
+    }
+  ]
+}

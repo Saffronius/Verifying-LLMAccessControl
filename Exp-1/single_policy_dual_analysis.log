@@ -4036,3 +4036,885 @@ Policy 1 and Policy 2 are equivalent.
 2024-09-09 16:05:28,265 - INFO - Results table updated and saved to /home/adarsh/Documents/Experiments/Exp-1/single_policy_dual_analysis.csv
 2024-09-09 16:05:28,265 - INFO - 
 Processing complete. Final results table saved to: /home/adarsh/Documents/Experiments/Exp-1/single_policy_dual_analysis.csv
+2025-05-31 02:13:22,116 - INFO - 
+Processing policy: 0.json
+2025-05-31 02:13:29,651 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:13:29,653 - INFO - Policy Description:
+This AWS IAM policy defines a set of permissions for a user, role, or group, specifying what actions they can and cannot perform on AWS resources. Below is a detailed explanation of what this policy allows and denies, broken down by each statement in a way that enables the reconstruction of the policy.
+
+1. The first statement allows all actions related to Amazon EC2 (Elastic Compute Cloud) but only in the `us-west-2` region. This means the user or role can perform any EC2 operation, such as starting or stopping instances, creating security groups, or managing volumes, as long as these actions are performed in the `us-west-2` region. The permission applies to all EC2 resources without restriction within that region.
+
+2. The second statement denies specific EC2 actions regardless of region or resource. This overrides any permissions granted elsewhere (including the first statement) for the listed actions. The denied actions include creating, modifying, or deleting network ACLs, VPCs, subnets, route tables, internet gateways, VPN connections, NAT gateways, and other networking or infrastructure-related configurations. It also denies actions related to purchasing or modifying reserved instances, requesting spot fleets, and other specific EC2 operations. Essentially, this statement restricts the user from making significant changes to networking or reserved instance configurations in EC2, even in the allowed region (`us-west-2`).
+
+3. The third statement allows all actions on a specific Amazon S3 bucket named `projectx12345` and any objects within that bucket. This means the user or role can perform any operation, such as uploading, downloading, deleting, or managing permissions, on this bucket and its contents.
+
+4. The fourth statement allows read-only actions on all S3 resources across all buckets. Specifically, it permits any S3 action that starts with `Get` or `List`, such as retrieving object metadata or listing bucket contents. This gives the user or role the ability to view information from any S3 bucket, but they can only perform write or delete operations on the `projectx12345` bucket as defined in the previous statement.
+
+5. The fifth statement allows the user or role to view billing and usage information in the AWS Billing and Cost Management console. This includes permissions to see billing details and usage reports, but it does not allow making changes to billing settings or payment methods. The permission applies to all resources, meaning there are no specific restrictions on what billing or usage data can be viewed.
+
+In summary, this policy grants broad EC2 permissions in the `us-west-2` region with specific networking and infrastructure actions denied, full access to a specific S3 bucket (`projectx12345`), read-only access to all other S3 resources, and the ability to view AWS billing and usage information.
+2025-05-31 02:13:34,907 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:13:34,909 - INFO - Generated Policy:
+2025-05-31 02:13:34,909 - INFO - {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ec2:*",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "Effect": "Deny",
+      "Action": [
+        "ec2:CreateNetworkAcl",
+        "ec2:CreateNetworkAclEntry",
+        "ec2:DeleteNetworkAcl",
+        "ec2:DeleteNetworkAclEntry",
+        "ec2:ReplaceNetworkAclEntry",
+        "ec2:CreateVpc",
+        "ec2:DeleteVpc",
+        "ec2:ModifyVpcAttribute",
+        "ec2:CreateSubnet",
+        "ec2:DeleteSubnet",
+        "ec2:ModifySubnetAttribute",
+        "ec2:CreateRouteTable",
+        "ec2:DeleteRouteTable",
+        "ec2:CreateRoute",
+        "ec2:DeleteRoute",
+        "ec2:CreateInternetGateway",
+        "ec2:DeleteInternetGateway",
+        "ec2:AttachInternetGateway",
+        "ec2:DetachInternetGateway",
+        "ec2:CreateVpnConnection",
+        "ec2:DeleteVpnConnection",
+        "ec2:CreateNatGateway",
+        "ec2:DeleteNatGateway",
+        "ec2:PurchaseReservedInstancesOffering",
+        "ec2:ModifyReservedInstances",
+        "ec2:RequestSpotFleet",
+        "ec2:ModifySpotFleetRequest"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::projectx12345",
+        "arn:aws:s3:::projectx12345/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:Get*",
+        "s3:List*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "aws-portal:ViewBilling",
+        "aws-portal:ViewUsage"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+2025-05-31 02:13:34,909 - INFO - Generated policy saved to: /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/gen_pol.json
+2025-05-31 02:13:35,012 - INFO - Generating SMT formulas:
+2025-05-31 02:13:35,012 - INFO - 
+2025-05-31 02:13:35,012 - ERROR - Errors: usage: quacky.py [-h] [-p1 POLICY1] [-p2 POLICY2] [-rd ROLE_DEFINITIONS]
+                 [-ra1 ROLE_ASSIGNMENT1] [-ra2 ROLE_ASSIGNMENT2] [-r ROLES]
+                 [-rb1 ROLE_BINDING1] [-rb2 ROLE_BINDING2] [-o OUTPUT] [-s]
+                 [-e] [-c] -b BOUND [-f] [-m MODELS] [-m1 MINRANGE]
+                 [-m2 MAXRANGE] [-pr] [-cr COMPAREREGEX] [-cr2 COMPAREREGEX2]
+                 [-v]
+quacky.py: error: the following arguments are required: -b/--bound
+
+2025-05-31 02:13:35,012 - INFO - SMT file 1 (P1 && ~P2) exists: True
+2025-05-31 02:13:35,012 - INFO - SMT file 2 (~P1 && P2) exists: True
+2025-05-31 02:13:35,012 - WARNING - Attempt 1 failed: Failed to generate SMT formulas.. Retrying in 10 seconds...
+2025-05-31 02:13:54,034 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:13:54,035 - INFO - Policy Description:
+This AWS IAM policy defines a set of permissions for a user, role, or group, specifying what actions they can and cannot perform on specific AWS services and resources. Below is a clear explanation of what this policy allows and denies, structured to enable the reconstruction of the policy.
+
+1. **EC2 Permissions in us-west-2 Region**: The policy allows all actions related to Amazon EC2 (Elastic Compute Cloud) services, represented by "ec2:*", on any EC2 resource ("*") but only within the us-west-2 region. This means the user can perform any EC2 operation, like starting or stopping instances, creating volumes, or managing security groups, as long as these actions are carried out in the us-west-2 region.
+
+2. **Deny Specific EC2 Actions**: Despite the broad allowance for EC2 actions in us-west-2, the policy explicitly denies a specific list of EC2 actions on any resource ("*"). These denied actions include operations related to network ACLs (e.g., creating, replacing, or deleting network ACLs or entries), managing gateways (like internet or VPN gateways), creating or deleting VPCs and subnets, purchasing or modifying reserved instances, and other specific networking or infrastructure setup tasks such as creating route tables or requesting spot fleets. This denial overrides any allowance for these specific actions, even in us-west-2, ensuring the user cannot perform these particular EC2 operations anywhere.
+
+3. **S3 Permissions for Specific Bucket**: The policy allows all actions related to Amazon S3 (Simple Storage Service), represented by "s3:*", but only for a specific S3 bucket named "projectx12345" and all objects within it ("arn:aws:s3:::projectx12345" and "arn:aws:s3:::projectx12345/*"). This means the user can upload, delete, or manage objects and bucket settings solely for this particular bucket.
+
+4. **Read-Only S3 Permissions for All Buckets**: In addition to the full permissions on the "projectx12345" bucket, the policy allows read-only actions on all S3 resources ("*"). Specifically, the user can perform any S3 action starting with "Get" (like retrieving objects) or "List" (like listing bucket contents) across any S3 bucket, not limited to "projectx12345". This grants the user the ability to view or retrieve data from any S3 bucket they have access to, but they cannot modify or delete data outside the specified bucket.
+
+5. **Billing and Usage Viewing Permissions**: The policy allows the user to view billing and usage information through the AWS Billing and Cost Management console. The allowed actions are "aws-portal:ViewBilling" and "aws-portal:ViewUsage" on any resource ("*"), enabling the user to access financial and usage reports for the AWS account without restrictions on specific resources.
+
+In summary, this policy grants broad EC2 permissions in us-west-2 with specific networking and infrastructure actions denied globally, full control over a specific S3 bucket with read-only access to all other S3 buckets, and the ability to view AWS billing and usage details.
+2025-05-31 02:13:57,807 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:13:57,807 - INFO - Generated Policy:
+2025-05-31 02:13:57,807 - INFO - {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ec2:*",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "Effect": "Deny",
+      "Action": [
+        "ec2:CreateNetworkAcl",
+        "ec2:CreateNetworkAclEntry",
+        "ec2:ReplaceNetworkAclEntry",
+        "ec2:DeleteNetworkAcl",
+        "ec2:DeleteNetworkAclEntry",
+        "ec2:CreateInternetGateway",
+        "ec2:DeleteInternetGateway",
+        "ec2:CreateVpnGateway",
+        "ec2:DeleteVpnGateway",
+        "ec2:CreateVpc",
+        "ec2:DeleteVpc",
+        "ec2:CreateSubnet",
+        "ec2:DeleteSubnet",
+        "ec2:PurchaseReservedInstancesOffering",
+        "ec2:ModifyReservedInstances",
+        "ec2:CreateRouteTable",
+        "ec2:DeleteRouteTable",
+        "ec2:RequestSpotFleet"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::projectx12345",
+        "arn:aws:s3:::projectx12345/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:Get*",
+        "s3:List*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "aws-portal:ViewBilling",
+        "aws-portal:ViewUsage"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+2025-05-31 02:13:57,808 - INFO - Generated policy saved to: /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/gen_pol.json
+2025-05-31 02:13:57,915 - INFO - Generating SMT formulas:
+2025-05-31 02:13:57,915 - INFO - 
+2025-05-31 02:13:57,915 - ERROR - Errors: usage: quacky.py [-h] [-p1 POLICY1] [-p2 POLICY2] [-rd ROLE_DEFINITIONS]
+                 [-ra1 ROLE_ASSIGNMENT1] [-ra2 ROLE_ASSIGNMENT2] [-r ROLES]
+                 [-rb1 ROLE_BINDING1] [-rb2 ROLE_BINDING2] [-o OUTPUT] [-s]
+                 [-e] [-c] -b BOUND [-f] [-m MODELS] [-m1 MINRANGE]
+                 [-m2 MAXRANGE] [-pr] [-cr COMPAREREGEX] [-cr2 COMPAREREGEX2]
+                 [-v]
+quacky.py: error: the following arguments are required: -b/--bound
+
+2025-05-31 02:13:57,915 - INFO - SMT file 1 (P1 && ~P2) exists: True
+2025-05-31 02:13:57,915 - INFO - SMT file 2 (~P1 && P2) exists: True
+2025-05-31 02:13:57,915 - WARNING - Attempt 2 failed: Failed to generate SMT formulas.. Retrying in 10 seconds...
+2025-05-31 02:15:50,089 - INFO - 
+Processing policy: 0.json
+2025-05-31 02:15:58,716 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:15:58,718 - INFO - Policy Description:
+This AWS IAM policy defines a set of permissions for a user, role, or group, specifying what actions they are allowed or denied to perform on specific AWS resources. Below is a clear explanation of each part of the policy in natural language, structured to allow for reconstruction of the policy based on the description.
+
+1. **EC2 Permissions in a Specific Region with Exceptions**:
+   - The policy allows the user to perform any action related to Amazon EC2 (Elastic Compute Cloud) services, but only in the `us-west-2` region (Oregon). This means they can manage EC2 instances, volumes, security groups, and other EC2-related resources as long as the actions are performed in this specific region.
+   - However, there are explicit restrictions. The policy denies the user from performing specific EC2 actions, regardless of the region. These denied actions include creating, modifying, or deleting network ACLs (Access Control Lists), managing gateways (like Internet Gateways, NAT Gateways, or VPN Gateways), creating or deleting VPCs (Virtual Private Clouds), subnets, route tables, or peering connections, allocating or associating IP addresses, managing reserved instances or spot fleets, and modifying VPC attributes or endpoints. Essentially, this restricts the user from making significant networking or infrastructure changes in EC2, even in the allowed region.
+
+2. **S3 Permissions for a Specific Bucket**:
+   - The policy grants full access to a specific Amazon S3 bucket named `projectx12345` and all objects within it. This means the user can upload, download, delete, or manage any files or settings related to this bucket.
+   - Additionally, the policy allows the user to perform read-only actions (any action starting with `Get` or `List`) on all other S3 buckets and objects across AWS. This means they can view or retrieve information from other buckets but cannot modify, delete, or upload content to them.
+
+3. **AWS Billing and Usage Permissions**:
+   - The policy allows the user to view billing information and usage reports in the AWS Management Console. They can access details about costs and resource usage across all services but cannot make changes to billing settings or payment methods.
+
+In summary, this policy is designed to give a user broad control over EC2 resources in the `us-west-2` region (except for specific networking and infrastructure actions), full control over a specific S3 bucket (`projectx12345`), read-only access to all other S3 resources, and the ability to view billing and usage information in AWS.
+2025-05-31 02:16:05,038 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:16:05,039 - INFO - Generated Policy:
+2025-05-31 02:16:05,039 - INFO - {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "ec2:*",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestedRegion": "us-west-2"
+                }
+            }
+        },
+        {
+            "Effect": "Deny",
+            "Action": [
+                "ec2:CreateNetworkAcl",
+                "ec2:CreateNetworkAclEntry",
+                "ec2:DeleteNetworkAcl",
+                "ec2:DeleteNetworkAclEntry",
+                "ec2:ReplaceNetworkAclEntry",
+                "ec2:CreateInternetGateway",
+                "ec2:DeleteInternetGateway",
+                "ec2:AttachInternetGateway",
+                "ec2:DetachInternetGateway",
+                "ec2:CreateNatGateway",
+                "ec2:DeleteNatGateway",
+                "ec2:CreateVpnGateway",
+                "ec2:DeleteVpnGateway",
+                "ec2:AttachVpnGateway",
+                "ec2:DetachVpnGateway",
+                "ec2:CreateVpc",
+                "ec2:DeleteVpc",
+                "ec2:CreateSubnet",
+                "ec2:DeleteSubnet",
+                "ec2:CreateRouteTable",
+                "ec2:DeleteRouteTable",
+                "ec2:CreateRoute",
+                "ec2:DeleteRoute",
+                "ec2:CreateVpcPeeringConnection",
+                "ec2:DeleteVpcPeeringConnection",
+                "ec2:AcceptVpcPeeringConnection",
+                "ec2:RejectVpcPeeringConnection",
+                "ec2:AllocateAddress",
+                "ec2:AssociateAddress",
+                "ec2:DisassociateAddress",
+                "ec2:ReleaseAddress",
+                "ec2:PurchaseReservedInstancesOffering",
+                "ec2:ModifyReservedInstances",
+                "ec2:CancelSpotFleetRequests",
+                "ec2:RequestSpotFleet",
+                "ec2:ModifyVpcAttribute",
+                "ec2:CreateVpcEndpoint",
+                "ec2:DeleteVpcEndpoints",
+                "ec2:ModifyVpcEndpoint"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::projectx12345",
+                "arn:aws:s3:::projectx12345/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:Get*",
+                "s3:List*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "aws-portal:ViewBilling",
+                "aws-portal:ViewUsage"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+2025-05-31 02:16:05,039 - INFO - Generated policy saved to: /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/gen_pol.json
+2025-05-31 02:19:54,969 - INFO - Generating SMT formulas:
+2025-05-31 02:19:54,969 - INFO - Policy 1 ⇏ Policy 2
+Solve Time (ms): 45887
+satisfiability: sat
+Count Time (ms): 78533
+lg(requests): 2368.0169396894235
+
+Policy 2 ⇏ Policy 1
+Solve Time (ms): 32366.4
+satisfiability: sat
+Count Time (ms): 73001.6
+lg(requests): 2368.0169396894235
+
+Policy 1 and Policy 2 do not subsume each other.
+
+2025-05-31 02:19:54,969 - INFO - SMT file 1 (P1 && ~P2) exists: True
+2025-05-31 02:19:54,969 - INFO - SMT file 2 (~P1 && P2) exists: True
+2025-05-31 02:19:54,988 - ERROR - Error generating models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_1.smt2: b'(error "line 12 column 49: unexpected end of string")\n'
+2025-05-31 02:19:54,988 - ERROR - Error generating models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_2.smt2: b'(error "line 12 column 49: unexpected end of string")\n'
+2025-05-31 02:19:54,988 - WARNING - No models provided for regex generation
+2025-05-31 02:19:54,988 - WARNING - No models provided for regex generation
+2025-05-31 02:19:54,988 - WARNING - Attempt 1 failed: Failed to generate one or both regexes from Z3 models.. Retrying in 10 seconds...
+2025-05-31 02:20:13,478 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:20:13,480 - INFO - Policy Description:
+This AWS IAM policy defines a set of permissions for a user, role, or group, specifying what actions are allowed or denied across different AWS services. Here's a clear, natural language explanation of what this policy permits and restricts:
+
+1. **EC2 Permissions in a Specific Region with Restrictions**:
+   - The policy allows all actions related to Amazon EC2 (Elastic Compute Cloud) in the `us-west-2` region. This means the user can perform any operation on EC2 resources, such as starting or stopping instances, creating security groups, or managing volumes, but only if these actions are performed in the `us-west-2` region.
+   - However, there are specific EC2 actions that are explicitly denied regardless of the region. These denied actions include creating, modifying, or deleting network ACLs, internet gateways, VPN gateways, customer gateways, NAT gateways, placement groups, reserved instance listings, route tables, subnets, VPCs, VPC endpoints, VPC peering connections, VPN connections, and more. Additionally, actions like allocating or associating Elastic IP addresses, modifying VPC attributes, purchasing reserved instances, requesting spot fleets, and other network or infrastructure-altering tasks are denied. These denials apply to all resources, meaning the user cannot perform these specific EC2 actions anywhere.
+
+2. **S3 Permissions for a Specific Bucket and Read-Only Access Globally**:
+   - The policy allows full access to a specific Amazon S3 bucket named `projectx12345` and all objects within it. This means the user can perform any action on this bucket, such as uploading, downloading, deleting, or managing permissions for objects in `projectx12345`.
+   - Additionally, the policy allows read-only access to all other S3 buckets and objects. Specifically, the user can perform actions like getting object details or listing bucket contents (`Get*` and `List*` actions) on any S3 resource, but they cannot modify, delete, or write to buckets or objects outside of `projectx12345`.
+
+3. **AWS Billing and Usage Viewing Permissions**:
+   - The policy allows the user to view billing and usage information in the AWS Management Console. This includes actions like checking costs or usage reports through the AWS Billing and Cost Management service. These permissions apply to all relevant resources, meaning the user can see billing and usage data for the entire AWS account they are associated with.
+
+In summary, this policy grants broad EC2 access in the `us-west-2` region with specific network and infrastructure-related actions denied everywhere, full control over a specific S3 bucket with read-only access to all other S3 resources, and the ability to view AWS billing and usage information.
+2025-05-31 02:20:21,137 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:20:21,139 - INFO - Generated Policy:
+2025-05-31 02:20:21,139 - INFO - {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ec2:*",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "Effect": "Deny",
+      "Action": [
+        "ec2:CreateNetworkAcl",
+        "ec2:CreateNetworkAclEntry",
+        "ec2:DeleteNetworkAcl",
+        "ec2:DeleteNetworkAclEntry",
+        "ec2:ReplaceNetworkAclEntry",
+        "ec2:CreateInternetGateway",
+        "ec2:DeleteInternetGateway",
+        "ec2:AttachInternetGateway",
+        "ec2:DetachInternetGateway",
+        "ec2:CreateVpnGateway",
+        "ec2:DeleteVpnGateway",
+        "ec2:AttachVpnGateway",
+        "ec2:DetachVpnGateway",
+        "ec2:CreateCustomerGateway",
+        "ec2:DeleteCustomerGateway",
+        "ec2:CreateNatGateway",
+        "ec2:DeleteNatGateway",
+        "ec2:CreatePlacementGroup",
+        "ec2:DeletePlacementGroup",
+        "ec2:CreateReservedInstancesListing",
+        "ec2:CancelReservedInstancesListing",
+        "ec2:CreateRoute",
+        "ec2:CreateRouteTable",
+        "ec2:DeleteRoute",
+        "ec2:DeleteRouteTable",
+        "ec2:AssociateRouteTable",
+        "ec2:DisassociateRouteTable",
+        "ec2:ReplaceRouteTableAssociation",
+        "ec2:CreateSubnet",
+        "ec2:DeleteSubnet",
+        "ec2:ModifySubnetAttribute",
+        "ec2:CreateVpc",
+        "ec2:DeleteVpc",
+        "ec2:ModifyVpcAttribute",
+        "ec2:CreateVpcEndpoint",
+        "ec2:DeleteVpcEndpoints",
+        "ec2:ModifyVpcEndpoint",
+        "ec2:CreateVpcPeeringConnection",
+        "ec2:DeleteVpcPeeringConnection",
+        "ec2:AcceptVpcPeeringConnection",
+        "ec2:RejectVpcPeeringConnection",
+        "ec2:CreateVpnConnection",
+        "ec2:DeleteVpnConnection",
+        "ec2:ModifyVpnConnection",
+        "ec2:AllocateAddress",
+        "ec2:AssociateAddress",
+        "ec2:DisassociateAddress",
+        "ec2:ReleaseAddress",
+        "ec2:PurchaseReservedInstancesOffering",
+        "ec2:RequestSpotFleet",
+        "ec2:CancelSpotFleetRequests",
+        "ec2:ModifySpotFleetRequest"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::projectx12345",
+        "arn:aws:s3:::projectx12345/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:Get*",
+        "s3:List*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "aws-portal:ViewBilling",
+        "aws-portal:ViewUsage",
+        "billing:Get*",
+        "billing:List*",
+        "billing:Describe*",
+        "cur:Describe*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+2025-05-31 02:20:21,140 - INFO - Generated policy saved to: /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/gen_pol.json
+2025-05-31 02:46:19,408 - INFO - 
+Processing policy: 0.json
+2025-05-31 02:46:28,896 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:46:28,898 - INFO - Policy Description:
+This AWS IAM policy defines a set of permissions for a user, role, or group by specifying what actions are allowed or denied on specific AWS resources. Here's a clear and comprehensive explanation of what this policy permits and restricts, described in natural language so that it can be used to reconstruct the policy:
+
+1. **EC2 Permissions in a Specific Region**: The policy allows all actions related to Amazon EC2 (Elastic Compute Cloud) services, but only in the `us-west-2` region (Oregon). This means the user or role can perform any EC2 operation, such as launching instances, managing security groups, or working with volumes, as long as these actions are performed in the specified region. If attempted in any other region, the actions will be denied by default due to the region-specific condition.
+
+2. **Explicit Denial of Certain EC2 Actions**: Despite the broad allowance of EC2 actions in `us-west-2`, the policy explicitly denies a specific list of EC2 actions regardless of region or resource. These denied actions primarily involve creating, modifying, or deleting core networking and infrastructure components, such as network ACLs, VPCs, subnets, route tables, internet gateways, NAT gateways, VPN connections, and VPC peering connections. Additionally, actions related to reserved instances, spot fleets, and Elastic IP allocations or associations are also denied. This restriction ensures that the user or role cannot make significant changes to the network architecture or purchase certain types of resources, even in the allowed region.
+
+3. **S3 Permissions for a Specific Bucket**: The policy allows all actions on a specific Amazon S3 bucket named `projectx12345` and any objects within that bucket. This means the user or role can perform operations like uploading, downloading, deleting, or configuring settings for this bucket and its contents.
+
+4. **Read-Only S3 Permissions for All Buckets**: In addition to full control over the `projectx12345` bucket, the policy allows read-only access to all other S3 buckets and their contents. Specifically, the user or role can perform any S3 action that starts with `Get` (like retrieving objects or metadata) or `List` (like listing buckets or objects) on any S3 resource. This does not permit writing, deleting, or modifying objects in buckets other than `projectx12345`.
+
+5. **Billing and Usage Viewing Permissions**: The policy allows the user or role to view billing and usage information in the AWS Management Console. This includes actions like checking costs and usage reports through the AWS Billing and Cost Management dashboard. These permissions apply to all resources, meaning there are no restrictions on what billing or usage data can be viewed.
+
+In summary, this policy grants broad EC2 access in the `us-west-2` region with specific networking and infrastructure actions denied, full control over a specific S3 bucket (`projectx12345`), read-only access to all other S3 buckets, and the ability to view billing and usage data in AWS. These rules collectively define the scope of what the user or role can and cannot do within the AWS environment.
+2025-05-31 02:46:34,193 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:46:34,194 - INFO - Generated Policy:
+2025-05-31 02:46:34,194 - INFO - {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ec2:*",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    },
+    {
+      "Effect": "Deny",
+      "Action": [
+        "ec2:CreateNetworkAcl",
+        "ec2:CreateNetworkAclEntry",
+        "ec2:DeleteNetworkAcl",
+        "ec2:DeleteNetworkAclEntry",
+        "ec2:CreateVpc",
+        "ec2:DeleteVpc",
+        "ec2:CreateSubnet",
+        "ec2:DeleteSubnet",
+        "ec2:CreateRouteTable",
+        "ec2:DeleteRouteTable",
+        "ec2:CreateRoute",
+        "ec2:DeleteRoute",
+        "ec2:CreateInternetGateway",
+        "ec2:DeleteInternetGateway",
+        "ec2:CreateNatGateway",
+        "ec2:DeleteNatGateway",
+        "ec2:CreateVpnConnection",
+        "ec2:DeleteVpnConnection",
+        "ec2:CreateVpcPeeringConnection",
+        "ec2:DeleteVpcPeeringConnection",
+        "ec2:AcceptVpcPeeringConnection",
+        "ec2:RejectVpcPeeringConnection",
+        "ec2:CreateReservedInstancesListing",
+        "ec2:ModifyReservedInstances",
+        "ec2:CancelReservedInstancesListing",
+        "ec2:CreateSpotFleetRequest",
+        "ec2:ModifySpotFleetRequest",
+        "ec2:CancelSpotFleetRequests",
+        "ec2:AllocateAddress",
+        "ec2:ReleaseAddress",
+        "ec2:AssociateAddress",
+        "ec2:DisassociateAddress"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::projectx12345",
+        "arn:aws:s3:::projectx12345/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:Get*",
+        "s3:List*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "aws-portal:ViewBilling",
+        "aws-portal:ViewUsage",
+        "billing:Get*",
+        "billing:List*",
+        "billing:Describe*",
+        "cur:Describe*",
+        "cur:Get*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+2025-05-31 02:46:34,194 - INFO - Generated policy saved to: /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/gen_pol.json
+2025-05-31 02:50:12,531 - INFO - Generating SMT formulas:
+2025-05-31 02:50:12,531 - INFO - Policy 1 ⇏ Policy 2
+Solve Time (ms): 40592.8
+satisfiability: sat
+Count Time (ms): 77187.2
+lg(requests): 2368.0169396894235
+
+Policy 2 ⇏ Policy 1
+Solve Time (ms): 27334.2
+satisfiability: sat
+Count Time (ms): 73086.3
+lg(requests): 3144.0225862529032
+
+Policy 1 and Policy 2 do not subsume each other.
+
+2025-05-31 02:50:12,531 - INFO - SMT file 1 (P1 && ~P2) exists: True
+2025-05-31 02:50:12,531 - INFO - SMT file 2 (~P1 && P2) exists: True
+2025-05-31 02:50:12,531 - INFO - Generating 1000 models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_1.smt2
+2025-05-31 02:50:12,541 - ERROR - Error generating models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_1.smt2: b'(error "line 21 column 34: unknown constant /ec2")\n(error "line 25 column 36: unknown constant /.*/")\n(error "line 47 column 36: unknown constant /.*/")\n(error "line 61 column 34: unknown constant /s3")\n(error "line 65 column 78: unknown constant /arn")\n(error "line 65 column 105: unexpected character")\n(error "line 79 column 34: unknown constant /s3")\n(error "line 83 column 36: unknown constant /.*/")\n(error "line 101 column 36: unknown constant /.*/")\n(error "line 123 column 34: unknown constant /ec2")\n(error "line 127 column 36: unknown constant /.*/")\n(error "line 149 column 36: unknown constant /.*/")\n(error "line 163 column 34: unknown constant /s3")\n(error "line 167 column 78: unknown constant /arn")\n(error "line 167 column 105: unexpected character")\n(error "line 181 column 34: unknown constant /s3")\n(error "line 185 column 36: unknown constant /.*/")\n(error "line 199 column 104: unknown constant /billing")\n(error "line 203 column 36: unknown constant /.*/")\n'
+2025-05-31 02:50:12,542 - INFO - Generating 1000 models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_2.smt2
+2025-05-31 02:50:12,542 - ERROR - Error generating models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_2.smt2: b'(error "line 21 column 34: unknown constant /ec2")\n(error "line 25 column 36: unknown constant /.*/")\n(error "line 47 column 36: unknown constant /.*/")\n(error "line 61 column 34: unknown constant /s3")\n(error "line 65 column 78: unknown constant /arn")\n(error "line 65 column 105: unexpected character")\n(error "line 79 column 34: unknown constant /s3")\n(error "line 83 column 36: unknown constant /.*/")\n(error "line 101 column 36: unknown constant /.*/")\n(error "line 123 column 34: unknown constant /ec2")\n(error "line 127 column 36: unknown constant /.*/")\n(error "line 149 column 36: unknown constant /.*/")\n(error "line 163 column 34: unknown constant /s3")\n(error "line 167 column 78: unknown constant /arn")\n(error "line 167 column 105: unexpected character")\n(error "line 181 column 34: unknown constant /s3")\n(error "line 185 column 36: unknown constant /.*/")\n(error "line 199 column 104: unknown constant /billing")\n(error "line 203 column 36: unknown constant /.*/")\n'
+2025-05-31 02:50:12,542 - WARNING - No models provided for regex generation
+2025-05-31 02:50:12,542 - WARNING - No models provided for regex generation
+2025-05-31 02:50:12,542 - WARNING - Attempt 1 failed: Failed to generate one or both regexes from Z3 models.. Retrying in 10 seconds...
+2025-05-31 02:50:31,470 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:50:31,471 - INFO - Policy Description:
+This AWS IAM policy defines a set of permissions for a user, role, or group, specifying what actions they can and cannot perform on specific AWS resources. Below is a clear explanation of what this policy allows and denies, structured to enable the reconstruction of the policy:
+
+1. **EC2 Permissions in a Specific Region**:
+   - The policy allows the user to perform any action related to Amazon EC2 (indicated by "ec2:*") on any EC2 resource (indicated by "*") but only in the "us-west-2" region. This means the user can manage EC2 instances, security groups, volumes, and other EC2-related resources as long as they are in the US West (Oregon) region.
+
+2. **Specific EC2 Actions Denied**:
+   - Despite the broad allowance for EC2 actions in the "us-west-2" region, the policy explicitly denies a specific set of EC2 actions related to networking and advanced configurations. These denied actions include creating, modifying, or deleting network ACLs, subnets, VPCs, gateways (like internet, VPN, or NAT gateways), route tables, and VPC peering connections. Additionally, actions related to reserved instances, spot fleets, and elastic IP address management (like allocating or associating addresses) are denied. This denial applies to all resources (indicated by "*"), meaning the user cannot perform these specific EC2 actions anywhere, even in the allowed region.
+
+3. **S3 Permissions for a Specific Bucket**:
+   - The policy allows the user to perform any action (indicated by "s3:*") on a specific S3 bucket named "projectx12345" and all objects within that bucket (indicated by "arn:aws:s3:::projectx12345" and "arn:aws:s3:::projectx12345/*"). This means the user has full control over this bucket, including reading, writing, deleting, and configuring bucket settings.
+
+4. **Read-Only S3 Permissions for All Buckets**:
+   - In addition to full access to the "projectx12345" bucket, the policy allows the user to perform read-only actions on all S3 buckets and resources (indicated by "*"). Specifically, the user can perform any S3 action that starts with "Get" or "List" (like getting object details or listing bucket contents), giving them the ability to view data and metadata across all S3 resources, but not modify or delete anything outside the specified "projectx12345" bucket.
+
+5. **Billing and Usage View Permissions**:
+   - The policy allows the user to view billing and usage information in the AWS Management Console. Specifically, the user can access actions like "aws-portal:ViewBilling" and "aws-portal:ViewUsage" on all resources (indicated by "*"). This means they can see cost reports and usage statistics but cannot make changes to billing settings or payment methods.
+
+In summary, this policy grants broad EC2 management capabilities in the "us-west-2" region while restricting specific networking and advanced EC2 actions everywhere. It provides full control over a specific S3 bucket ("projectx12345") and read-only access to all other S3 resources. Lastly, it permits viewing AWS billing and usage data without allowing modifications.
+2025-05-31 02:50:36,851 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 02:50:36,852 - INFO - Generated Policy:
+2025-05-31 02:50:36,852 - INFO - {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "ec2:*",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestedRegion": "us-west-2"
+                }
+            }
+        },
+        {
+            "Effect": "Deny",
+            "Action": [
+                "ec2:CreateNetworkAcl",
+                "ec2:CreateNetworkAclEntry",
+                "ec2:DeleteNetworkAcl",
+                "ec2:DeleteNetworkAclEntry",
+                "ec2:ReplaceNetworkAclAssociation",
+                "ec2:ReplaceNetworkAclEntry",
+                "ec2:CreateSubnet",
+                "ec2:DeleteSubnet",
+                "ec2:ModifySubnetAttribute",
+                "ec2:CreateVpc",
+                "ec2:DeleteVpc",
+                "ec2:ModifyVpcAttribute",
+                "ec2:CreateInternetGateway",
+                "ec2:DeleteInternetGateway",
+                "ec2:AttachInternetGateway",
+                "ec2:DetachInternetGateway",
+                "ec2:CreateNatGateway",
+                "ec2:DeleteNatGateway",
+                "ec2:CreateVpnGateway",
+                "ec2:DeleteVpnGateway",
+                "ec2:AttachVpnGateway",
+                "ec2:DetachVpnGateway",
+                "ec2:CreateRouteTable",
+                "ec2:DeleteRouteTable",
+                "ec2:CreateRoute",
+                "ec2:DeleteRoute",
+                "ec2:ReplaceRoute",
+                "ec2:CreateVpcPeeringConnection",
+                "ec2:DeleteVpcPeeringConnection",
+                "ec2:AcceptVpcPeeringConnection",
+                "ec2:RejectVpcPeeringConnection",
+                "ec2:ModifyReservedInstances",
+                "ec2:PurchaseReservedInstancesOffering",
+                "ec2:CreateSpotFleetRequest",
+                "ec2:ModifySpotFleetRequest",
+                "ec2:CancelSpotFleetRequests",
+                "ec2:AllocateAddress",
+                "ec2:ReleaseAddress",
+                "ec2:AssociateAddress",
+                "ec2:DisassociateAddress"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::projectx12345",
+                "arn:aws:s3:::projectx12345/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:Get*",
+                "s3:List*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "aws-portal:ViewBilling",
+                "aws-portal:ViewUsage"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+2025-05-31 02:50:36,853 - INFO - Generated policy saved to: /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/gen_pol.json
+2025-05-31 03:13:43,455 - INFO - Skipping policy file: 0.json as per request.
+2025-05-31 03:14:46,251 - INFO - Skipping policy file: 0.json as per request.
+2025-05-31 03:14:46,252 - INFO - Progress updated to: 1
+2025-05-31 03:14:46,252 - INFO - 
+Processing policy: 1.json
+2025-05-31 03:14:50,993 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 03:14:50,995 - INFO - Policy Description:
+This AWS IAM policy grants specific permissions related to managing EC2 volumes and instances under certain conditions.
+
+1. The first part of the policy allows a user to perform the actions of attaching and detaching volumes (`ec2:AttachVolume` and `ec2:DetachVolume`) to or from EC2 instances. However, this permission is restricted to instances that have a specific tag, where the tag key is "Department" and the tag value is "Development". This means the user can only attach or detach volumes to instances that are tagged as belonging to the Development department.
+
+2. The second part of the policy also allows a user to perform the actions of attaching and detaching volumes (`ec2:AttachVolume` and `ec2:DetachVolume`), but this time the permission applies to the volumes themselves. This permission is restricted to volumes that have a specific tag, where the tag key is "VolumeUser" and the tag value matches the username of the user making the request (`${aws:username}`). This ensures that users can only manage volumes that are tagged with their own username.
+
+In summary, this policy permits a user to attach or detach volumes, but only when working with instances tagged for the Development department and volumes tagged with their own username.
+2025-05-31 03:14:52,729 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 03:14:52,730 - INFO - Generated Policy:
+2025-05-31 03:14:52,730 - INFO - {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:AttachVolume",
+                "ec2:DetachVolume"
+            ],
+            "Resource": "arn:aws:ec2:*:*:instance/*",
+            "Condition": {
+                "StringEquals": {
+                    "ec2:ResourceTag/Department": "Development"
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:AttachVolume",
+                "ec2:DetachVolume"
+            ],
+            "Resource": "arn:aws:ec2:*:*:volume/*",
+            "Condition": {
+                "StringEquals": {
+                    "ec2:ResourceTag/VolumeUser": "${aws:username}"
+                }
+            }
+        }
+    ]
+}
+2025-05-31 03:14:52,730 - INFO - Generated policy saved to: /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/gen_pol.json
+2025-05-31 03:14:53,567 - INFO - Generating SMT formulas:
+2025-05-31 03:14:53,567 - INFO - Policy 1 ⇏ Policy 2
+Solve Time (ms): 343.991
+satisfiability: unsat
+requests: 0
+
+Policy 2 ⇏ Policy 1
+Solve Time (ms): 371.407
+satisfiability: unsat
+requests: 0
+
+Policy 1 and Policy 2 are equivalent.
+
+2025-05-31 03:14:53,567 - INFO - SMT file 1 (P1 && ~P2) exists: True
+2025-05-31 03:14:53,567 - INFO - SMT file 2 (~P1 && P2) exists: True
+2025-05-31 03:14:53,567 - INFO - Generating 1000 models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_1.smt2 using solver.from_string()
+2025-05-31 03:14:53,576 - ERROR - Error generating models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_1.smt2: b'(error "line 12 column 81: unexpected end of string")\n'
+2025-05-31 03:14:53,576 - INFO - Generating 1000 models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_2.smt2 using solver.from_string()
+2025-05-31 03:14:53,576 - ERROR - Error generating models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_2.smt2: b'(error "line 12 column 81: unexpected end of string")\n'
+2025-05-31 03:14:53,576 - WARNING - No models provided for regex generation
+2025-05-31 03:14:53,576 - WARNING - No models provided for regex generation
+2025-05-31 03:14:53,576 - WARNING - Attempt 1 failed: Failed to generate one or both regexes from Z3 models.. Retrying in 10 seconds...
+2025-05-31 03:16:52,767 - INFO - 
+Processing policy: 1.json
+2025-05-31 03:16:56,858 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 03:16:56,860 - INFO - Policy Description:
+This AWS IAM policy grants specific permissions related to attaching and detaching volumes in Amazon EC2, with certain conditions applied to control access based on resource tags and user identity.
+
+1. The first part of the policy allows the actions of attaching a volume (`ec2:AttachVolume`) and detaching a volume (`ec2:DetachVolume`) to EC2 instances. This permission applies to any EC2 instance across all regions and accounts, but only if the instance has a tag named `Department` with the value `Development`. In other words, the user can only attach or detach volumes to or from instances that are tagged as belonging to the Development department.
+
+2. The second part of the policy also allows the actions of attaching a volume (`ec2:AttachVolume`) and detaching a volume (`ec2:DetachVolume`), but this time it applies to EC2 volumes. This permission covers any volume across all regions and accounts, but only if the volume has a tag named `VolumeUser` with a value that matches the username of the user making the request. This means a user can only attach or detach volumes that are tagged with their specific username.
+
+In summary, this policy ensures that users can manage volume attachments and detachments for EC2 instances tagged for the Development department and for volumes tagged specifically to their username.
+2025-05-31 03:16:58,495 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 03:16:58,496 - INFO - Generated Policy:
+2025-05-31 03:16:58,496 - INFO - {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:AttachVolume",
+        "ec2:DetachVolume"
+      ],
+      "Resource": "arn:aws:ec2:*:*:instance/*",
+      "Condition": {
+        "StringEquals": {
+          "ec2:ResourceTag/Department": "Development"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:AttachVolume",
+        "ec2:DetachVolume"
+      ],
+      "Resource": "arn:aws:ec2:*:*:volume/*",
+      "Condition": {
+        "StringEquals": {
+          "ec2:ResourceTag/VolumeUser": "${aws:username}"
+        }
+      }
+    }
+  ]
+}
+2025-05-31 03:16:58,497 - INFO - Generated policy saved to: /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/gen_pol.json
+2025-05-31 03:16:59,332 - INFO - Generating SMT formulas:
+2025-05-31 03:16:59,333 - INFO - Policy 1 ⇏ Policy 2
+Solve Time (ms): 351.503
+satisfiability: unsat
+requests: 0
+
+Policy 2 ⇏ Policy 1
+Solve Time (ms): 358.431
+satisfiability: unsat
+requests: 0
+
+Policy 1 and Policy 2 are equivalent.
+
+2025-05-31 03:16:59,333 - INFO - SMT file 1 (P1 && ~P2) exists: True
+2025-05-31 03:16:59,333 - INFO - SMT file 2 (~P1 && P2) exists: True
+2025-05-31 03:16:59,333 - INFO - Generating 1000 models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_1.smt2 using solver.from_string()
+2025-05-31 03:16:59,341 - ERROR - Error generating models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_1.smt2: b'(error "line 12 column 81: unexpected end of string")\n'
+2025-05-31 03:16:59,341 - INFO - Generating 1000 models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_2.smt2 using solver.from_string()
+2025-05-31 03:16:59,341 - ERROR - Error generating models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_2.smt2: b'(error "line 12 column 81: unexpected end of string")\n'
+2025-05-31 03:16:59,341 - WARNING - No models provided for regex generation
+2025-05-31 03:16:59,342 - WARNING - No models provided for regex generation
+2025-05-31 03:16:59,342 - WARNING - Attempt 1 failed: Failed to generate one or both regexes from Z3 models.. Retrying in 10 seconds...
+2025-05-31 03:17:15,346 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 03:17:15,348 - INFO - Policy Description:
+This AWS IAM policy grants specific permissions related to managing EC2 volumes and instances under certain conditions. It consists of two separate statements, both with an "Allow" effect, meaning they permit the specified actions when the conditions are met.
+
+In the first statement, the policy allows the actions of attaching and detaching volumes (specifically, "ec2:AttachVolume" and "ec2:DetachVolume") to or from EC2 instances. This permission applies to any EC2 instance in any region (as indicated by the wildcard "*" in the resource ARN "arn:aws:ec2:*:*:instance/*"). However, this is restricted by a condition: the instance must have a tag named "Department" with the value "Development". In other words, the user can only attach or detach volumes to or from instances that are tagged as belonging to the Development department.
+
+In the second statement, the policy also allows the actions of attaching and detaching volumes ("ec2:AttachVolume" and "ec2:DetachVolume"), but this time the permission applies to any EC2 volume in any region (as indicated by the wildcard "*" in the resource ARN "arn:aws:ec2:*:*:volume/*"). This permission is also restricted by a condition: the volume must have a tag named "VolumeUser" with a value that matches the username of the user making the request (represented by "${aws:username}"). This means a user can only attach or detach volumes that are tagged with their own username.
+
+In summary, this policy allows a user to attach and detach volumes, but only when working with instances tagged for the "Development" department and volumes tagged with the user’s own username. If these tag conditions are not met, the actions will be denied for those specific resources.
+2025-05-31 03:17:17,106 - INFO - HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-31 03:17:17,108 - INFO - Generated Policy:
+2025-05-31 03:17:17,108 - INFO - {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:AttachVolume",
+        "ec2:DetachVolume"
+      ],
+      "Resource": "arn:aws:ec2:*:*:instance/*",
+      "Condition": {
+        "StringEquals": {
+          "ec2:ResourceTag/Department": "Development"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:AttachVolume",
+        "ec2:DetachVolume"
+      ],
+      "Resource": "arn:aws:ec2:*:*:volume/*",
+      "Condition": {
+        "StringEquals": {
+          "ec2:ResourceTag/VolumeUser": "${aws:username}"
+        }
+      }
+    }
+  ]
+}
+2025-05-31 03:17:17,108 - INFO - Generated policy saved to: /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/gen_pol.json
+2025-05-31 03:17:17,938 - INFO - Generating SMT formulas:
+2025-05-31 03:17:17,938 - INFO - Policy 1 ⇏ Policy 2
+Solve Time (ms): 357.495
+satisfiability: unsat
+requests: 0
+
+Policy 2 ⇏ Policy 1
+Solve Time (ms): 350.977
+satisfiability: unsat
+requests: 0
+
+Policy 1 and Policy 2 are equivalent.
+
+2025-05-31 03:17:17,938 - INFO - SMT file 1 (P1 && ~P2) exists: True
+2025-05-31 03:17:17,938 - INFO - SMT file 2 (~P1 && P2) exists: True
+2025-05-31 03:17:17,938 - INFO - Generating 1000 models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_1.smt2 using solver.from_string()
+2025-05-31 03:17:17,939 - ERROR - Error generating models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_1.smt2: b'(error "line 12 column 81: unexpected end of string")\n'
+2025-05-31 03:17:17,939 - INFO - Generating 1000 models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_2.smt2 using solver.from_string()
+2025-05-31 03:17:17,939 - ERROR - Error generating models from /home/ash/Documents/Verifying-LLMAccessControl/Exp-1/quacky/src/output_2.smt2: b'(error "line 12 column 81: unexpected end of string")\n'
+2025-05-31 03:17:17,939 - WARNING - No models provided for regex generation
+2025-05-31 03:17:17,939 - WARNING - No models provided for regex generation
+2025-05-31 03:17:17,939 - WARNING - Attempt 2 failed: Failed to generate one or both regexes from Z3 models.. Retrying in 10 seconds...

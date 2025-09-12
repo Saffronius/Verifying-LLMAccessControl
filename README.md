@@ -2,123 +2,184 @@
 
 ## Overview
 
-This repository contains the code and instructions to replicate our experiments on using large language models for access control policy synthesis and verification. Our study explores the generation and analysis of access control policies using state-of-the-art language models, with a focus on AWS policies.
+This repository contains the code and experimental artifacts for verifying LLM-synthesized access control policies. Our research explores techniques for generating, analyzing, and verifying access control policies using large language models, with a focus on AWS IAM policies and formal verification methods.
 
-## Model Selection Rationale
+## Research Approach
 
-We chose Claude-3.5 Sonnet for our primary policy generation tasks due to its exceptional performance across various LLM evaluation benchmarks, comparable to OpenAI's GPT-4o. In our initial policy comparison experiment, Claude-3.5 Sonnet consistently outperformed GPT-4o in policy-related tasks.
+Our methodology combines:
+- **Natural Language Processing**: Converting policy descriptions to formal specifications
+- **Formal Verification**: Using SMT solvers and model counting for policy analysis
+- **Quantitative Analysis**: Measuring policy permissiveness and semantic equivalence
+- **Pattern Synthesis**: Generating regex patterns from example strings
 
-While Mistral Large showed superior performance in our specific policy comparison experiment, its overall capabilities as measured by widely recognized open benchmarks lag behind both GPT-4o and Claude-3.5 Sonnet. We determined that Claude-3.5 Sonnet offered the best balance of general capability and task-specific performance for our subsequent experiments.
+We evaluate state-of-the-art language models on their ability to:
+1. Generate syntactically and semantically correct policies
+2. Comprehend and explain existing policies
+3. Synthesize patterns that capture policy resource constraints
+4. Maintain semantic equivalence across transformations
 
-## Experimental Approach
+## Repository Structure
 
-During our initial exploratory phase, we experimented with various LLMs, including GPT-3.5, GPT-4, and open-source models like Llama 3 and Llama 3.1 (7B and 42B parameter models). However, due to computational demands and resource limitations, we shifted to using LLM APIs from Mistral, OpenAI, and Anthropic for our empirical study on synthesizing policies.
+```
+Verifying-LLMAccessControl/
+├── artifacts/              # Interactive Streamlit demo with Docker deployment
+│   ├── app.py             # Main web interface
+│   ├── backend/           # Core logic and wrappers
+│   ├── quacky/            # Modified Quacky tool (bundled)
+│   ├── docker-compose.yml # Easy deployment configuration
+│   └── REVIEWER_QUICKSTART.md
+│
+├── CPCA/                   # Core Policy Comprehension Assessment framework
+│   ├── cpca.py            # Main experiment runner
+│   ├── quacky/            # Quantitative analysis tool
+│   └── experiment_results/ # Experimental data
+│
+├── Exp-1/                  # Policy Generation and Comparison
+│   ├── Exp-1.py           # Dual policy analysis
+│   └── README.md          # Experiment details
+│
+├── Exp-2/                  # Resource Summarization 
+│   ├── Exp-2.py           # Regex synthesis from policies
+│   ├── results/           # Evaluation metrics
+│   └── tests/             # Test cases
+│
+├── Exp-3/                  # Factors Affecting Summarization
+│   ├── Exp-3.py           # Multi-string analysis
+│   └── multi-string.csv   # Results data
+│
+├── Exp-4-Zelkova/         # Zelkova-based Verification
+│   ├── Exp-4-Zelkova.py   # Z3 model enumeration
+│   ├── z3_model_enum.py   # SMT solving utilities
+│   └── results/           # Verification outputs
+│
+├── regex/                  # Regex Generation Results
+│   └── *.csv              # Pattern synthesis evaluations
+│
+├── Dataset/               # AWS IAM Policy Dataset
+├── Fine-tuning/           # Model Fine-tuning Experiments
+└── Simplification-Exp/    # Policy Simplification Studies
+```
 
-For our main experiments, we used:
-- Claude-3.5 Sonnet for policy generation
-- A custom fine-tuned GPT-4o-mini for regex generation
+## Quick Start with Docker (Recommended)
 
-This combination allowed us to leverage the strengths of different models tailored to our specific research objectives.
+The `artifacts/` directory contains a fully dockerized demo:
 
-## Prerequisites
+```bash
+cd artifacts/
+cp .env.example .env  # Add your API keys
+docker-compose up -d
+# Access at http://localhost:8501
+```
+
+See [artifacts/DOCKER_README.md](artifacts/DOCKER_README.md) for detailed instructions.
+
+## Prerequisites for Local Setup
 
 - Python 3.8+
-- Anthropic API key
-- OpenAI API key (for fine-tuned model experiments)
-- Access to AWS policies dataset (or your own dataset of access control policies)
+- API keys for LLM services (at least one required)
 - ABC (Automata-Based model Counter)
 - Quacky (Quantitative Access Control Permissiveness Analyzer)
 
 ## Installation
 
-1. Clone this repository:
+1. Clone this repository
 
-2. Install the required dependencies:
-   ```
+2. Install Python dependencies:
+   ```bash
    pip install -r requirements.txt
    ```
 
-3. Set up your API keys:
-   Create a file named `llms.env` in the root directory and add your API keys:
-
-   For more information on how to add api keys and use llms.env, refer to the following urls for
-
-   Anthropic :- [Initial Setup - Anthropic Docs](https://docs.anthropic.com/en/docs/initial-setup)
-   
-   OpenAI :- [Quickstart - OpenAI Platform](https://platform.openai.com/docs/quickstart)
+3. Set up API keys:
+   Create `.env` file with your keys:
    ```
-   ANTHROPIC_API_KEY=your_anthropic_api_key
-   OPENAI_API_KEY=your_openai_api_key
+   ANTHROPIC_API_KEY=your_key
+   OPENAI_API_KEY=your_key
+   GOOGLE_API_KEY=your_key
    ```
 
-5. Install ABC (Automata-Based model Counter):
-   Follow the installation instructions at:
-   https://github.com/vlab-cs-ucsb/ABC
+4. Install ABC solver:
+   ```bash
+   git clone https://github.com/vlab-cs-ucsb/ABC.git
+   cd ABC && mkdir build && cd build
+   cmake .. && make && sudo make install
+   ```
 
-6. Install Quacky (Quantitative Access Control Permissiveness Analyzer):
-   Follow the installation instructions at:
-   https://github.com/vlab-cs-ucsb/quacky
-
-   Note: Ensure that both ABC and Quacky are properly installed and accessible in your system's PATH.
+5. Install Quacky (included in CPCA directory with modifications)
 
 ## Experiments
 
 ### Experiment 1: Policy Generation and Comparison
-
-To run the policy generation and comparison experiment, open folder Exp-1 :
-run command:-
-
-```
+Evaluates LLM capabilities in generating and comparing access control policies.
+```bash
+cd Exp-1/
 python Exp-1.py
 ```
 
 ### Experiment 2: Resource Summarization
-
-To run the resource summarization experiment, open folder Exp-2:
-run command:-
-
-```
+Tests the ability to generate concise regex patterns that summarize policy resources.
+```bash
+cd Exp-2/
 python Exp-2.py
 ```
 
-This experiment evaluates Verisynth's ability to generate concise and accurate regular expressions (regexes) that summarize the resources allowed by access control policies. It assesses how well Verisynth can abstract and represent complex policy permissions in a compact form, measuring factors such as regex complexity, processing time, and semantic accuracy (via Jaccard similarity).
-
 ### Experiment 3: Factors Affecting Summarization Accuracy
-
-To run the experiment on factors affecting summarization accuracy, open folder Exp-3:
-
-```
+Investigates how various factors (string count, complexity) affect pattern synthesis accuracy.
+```bash
+cd Exp-3/
 python Exp-3.py
 ```
 
-This experiment investigates factors influencing the accuracy of resource summarization in access control policies using three approaches: direct simplification, pre-trained generalization, and fine-tuned generalization. It also explores the impact of varying the number of enumerated strings on summarization accuracy.
+### Experiment 4: Zelkova-based Verification
+Uses Z3 theorem prover for formal policy verification and model enumeration.
+```bash
+cd Exp-4-Zelkova/
+python Exp-4-Zelkova.py
+```
+
+### CPCA: Comprehensive Policy Analysis
+Full experimental framework for policy comprehension assessment.
+```bash
+cd CPCA/
+python cpca.py --models <model_name> --policy-dir <path> --output-dir results
+```
+
+## Key Features
+
+- **Policy Generation**: Natural language to AWS IAM policy conversion
+- **Quantitative Comparison**: SMT-based policy space analysis
+- **Pattern Synthesis**: Regex generation from example strings
+- **Formal Verification**: Using ABC and Z3 solvers
+- **Interactive Demo**: Web-based interface for all features
+
+## Technical Components
+
+- **Quacky**: Translates policies to SMT-LIB format for model counting
+- **ABC Solver**: Performs efficient model counting for policy analysis
+- **Z3 Theorem Prover**: Used for formal verification in Exp-4
+- **Streamlit Interface**: User-friendly web demo in artifacts/
 
 ## Data
-- We have made available the entire Dataset used for this project, to add your own:
-- Place your AWS policies dataset in the `Dataset` folder.
-- Results will be saved in CSV format in the respective Experiment folder.
 
-## Replicating Results
+The `Dataset/` folder contains AWS IAM policies used in experiments. To use your own:
+1. Place policies in JSON format in the Dataset folder
+2. Update experiment scripts to point to your data
+3. Results will be saved in CSV format in respective experiment folders
 
-To replicate our results:
+## Replication Notes
 
-1. Ensure you have the same dataset of AWS policies used in our study.
-2. Run each experiment script as described above.
-3. The results will be saved in CSV files in the `results` folder.
-4. Use the provided Jupyter notebooks in the `analysis` folder to generate charts and perform statistical analyses.
-
-## Note
-
-Due to the non-deterministic nature of language models, exact replication of results may not be possible. However, you should observe similar trends and patterns in your results.
+Due to the non-deterministic nature of language models, exact result replication may vary. However, the techniques and trends should be consistent. The bundled Quacky in `artifacts/` and `CPCA/` includes necessary modifications for our experiments.
 
 ## Citation
 
-If you use this code or our findings in your research, please cite our paper:
-
+If you use this code or our findings in your research, please cite:
+```
 [Citation information will be added upon publication]
+```
 
 ## License
 
-[MIT License]
-```
+MIT License
 
+## Contact
+
+For questions about the experiments or techniques, please open an issue on GitHub.

@@ -1,0 +1,60 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowUserToSeeBucketListInTheConsole",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListAllMyBuckets",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::*"
+    },
+    {
+      "Sid": "AllowRootAndHomeListingOfCompanyBucket",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::my-bucket"
+    },
+    {
+      "Sid": "DenyAllListingExpectForHomeAndUserFolders",
+      "Effect": "Deny",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::my-bucket",
+      "Condition": {
+        "Null": {
+          "s3:prefix": "false"
+        },
+        "StringNotLike": {
+          "s3:prefix": [
+            "",
+            "home/",
+            "home/Jas/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AllowRootListingWithoutPrefix",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::my-bucket",
+      "Condition": {
+        "Null": {
+          "s3:prefix": "true"
+        },
+        "StringEquals": {
+          "s3:delimiter": [
+            "/"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AllowAllS3ActionsInUserFolder",
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": "arn:aws:s3:::my-bucket/home/Jas/*"
+    }
+  ]
+}

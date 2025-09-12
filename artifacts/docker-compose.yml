@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  quacky-demo:
+    build:
+      context: .  # Build from the artifacts directory
+      dockerfile: Dockerfile
+    container_name: quacky-pipeline-demo
+    ports:
+      - "8501:8501"
+    environment:
+      # API Keys - reviewers should add their own keys here or use .env file
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GROK_API_KEY=${GROK_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+    volumes:
+      # Mount local .env file if it exists
+      - ./.env:/app/.env:ro
+      # Mount results directory for persistence
+      - ./results:/app/results
+      # Mount temp directory for intermediate files
+      - ./temp:/app/temp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - quacky-network
+
+networks:
+  quacky-network:
+    driver: bridge

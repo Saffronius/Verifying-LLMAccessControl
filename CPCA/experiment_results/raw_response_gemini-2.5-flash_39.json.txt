@@ -1,0 +1,16 @@
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowS3FullAccessToBillingBucket",
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::billing",
+        "arn:aws:s3:::billing/*"
+      ]
+    }
+  ]
+}
+```

@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Don't ignore the quacky directory - we need it in the build
+!quacky/
+
+# Environment files (keep .env.example)
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+!README.md
+!FEATURE_COMPLETE.md
+!TEST_RESULTS.md
+
+# Test files
+test_*.py
+tests/
+*.log
+*.csv
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+
+# Results (will be mounted as volume)
+results/
+
+# Docker files (avoid recursive copy)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Build artifacts
+*.o
+*.a
+*.so
+build/
+cmake-build-*/
+
+# Node modules (if any)
+node_modules/
+
+# Jupyter notebooks
+*.ipynb_checkpoints
+*.ipynb

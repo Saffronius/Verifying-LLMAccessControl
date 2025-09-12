@@ -1,29 +1,32 @@
 import subprocess
 import pandas as pd
 import os
-import anthropic
+from openai import OpenAI
 import json
 import logging
 from tqdm import tqdm
-import signal
 import re
 import time
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Initialize the OpenAI client
+client = OpenAI()
+
+# Use GPT-5 with medium reasoning effort for regex synthesis
+model_name = "gpt-5"
 
 
-
-# Please include your own API keys here
-
-
-model_name = "claude-3-5-sonnet-20240620"
-
-
-policy_folder = "Dataset"
-quacky_path = "quacky/src/quacky.py"
-working_directory = "quacky/src/"
-response_file_path = "quacky/src/response.txt"
+policy_folder = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/Prev-Experiments/Verifying-LLMAccessControl/Dataset/Dataset_mutated"
+quacky_base_path = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/quacky/src"
+quacky_path = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/quacky/src/quacky.py"
+working_directory = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/quacky/src/"
+response_file_path = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/quacky/src/response.txt"
 result_table_path = "Exp-2/multi-string.csv"
-generated_policy_path = "quacky/src/gen_pol.json"
-p1_not_p2_models_path = "quacky/src/P1_not_P2.models"
+generated_policy_path = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/quacky/src/gen_pol.json"
+p1_not_p2_models_path = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/quacky/src/P1_not_P2.models"
 progress_file_path = "Exp-2/progress.json"
 
 def read_policy_file(file_path):
@@ -54,32 +57,47 @@ def generate_strings(policy_path, size):
     return strings
 
 def generate_regex(strings):
-    system_prompt = """
-    When asked to give a regex, provide ONLY the regex pattern itself. Do not include any explanations, markdown formatting, or additional text. The response should be just the regex pattern, nothing else. This is a highly critical application and it is imperative to get this right. Just give me the regex.
-    
-    Example bad(terrible) response(DO NOT WANT THIS IN ANY CASE):
-    
-    "Here is the regex pattern based on the provided set of strings: (?:foo|bar)[a-z0-9.-]{0,60}"
+    developer_prompt = """
+Output only the regex pattern (no quotes, no prose).
 
-
-    Example good response:
-
-    "(?:foo|bar)[a-z0-9.-]{0,60}"
-
-    """
-    prompt = f"Give me a single regex that accepts each string in the following set of strings, Make sure that you carefully go through each string before forming the regex. it should be close to optimal and not super permissive:\n\n{strings}\n\n , Example bad(terrible) response(DO NOT WANT THIS IN ANY CASE): Here is the regex pattern based on the provided set of strings: arn:aws:ec2:us-east-1:(?:\d:?)?(?:(?:key-pair|subnet|security-group|network-interface|volume|instance)|image/ami-)[!-~], Example good response: arn:aws:ec2:us-east-1:(?:\d:?)?(?:(?:key-pair|subnet|security-group|network-interface|volume|instance)|image/ami-)[!-~], (This response acts as an input for a regex analysis application so if you give me any sort of additional text along with the regex like Here's a regex matching the strings , etc. etc. the application will fail, so only reply with the regex and nothing else.)"
-
+Constraints (safe for DFA/ABC-style tooling):
+- Do NOT use ^ or $, \\A \\Z \\z \\G.
+- Do NOT use any (?...) constructs at all:
+  non-capturing (?: ), lookarounds (?=, ?!, ?<=, ?<!), inline flags (?i),
+  atomic (?>), conditionals, named groups, or backreferences \\1..\\9.
+- Do NOT use lazy quantifiers (*?, +?, ??, {m,n}?).
+- Match substrings; do not add boundaries.
+- Do NOT invent rules about '/', spaces, or extensions unless forced by examples.
+- Keep it specific; prefer bounded {m,n} and tight positive classes.
+"""
+    user_prompt = (
+        "Give a single regex that matches ALL of these strings (substring semantics). "
+        "Return ONLY the regex pattern, nothing else:\n\n" + strings
+    )
 
     try:
-        response = client.messages.create(
+        response = client.responses.create(
             model=model_name,
-            max_tokens=1000,
-            system=system_prompt,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            input=[
+                {"role": "developer", "content": developer_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            reasoning={
+                "effort": "medium"  # Use medium reasoning effort
+            },
+            max_output_tokens=5000  # Balanced for reasoning through 1000 strings
         )
-        regex = response.content[0].text.strip()
+        
+        # Extract text from the nested response structure (as per official GPT-5 docs)
+        regex = ""
+        if hasattr(response, 'output') and response.output:
+            for item in response.output:
+                if hasattr(item, "content"):
+                    for content in item.content:
+                        if hasattr(content, "text"):
+                            regex += content.text
+        
+        regex = regex.strip()
         
         with open(response_file_path, "w") as output_file:
             output_file.write(regex)
@@ -90,10 +108,7 @@ def generate_regex(strings):
         logging.error(f"Error calling Anthropic API for regex generation: {str(e)}")
         return None
 
-def timeout_handler(signum, frame):
-    raise TimeoutError("Analysis took too long")
-
-def run_final_analysis(policy_path, timeout=2000):
+def run_final_analysis(policy_path):
     command = [
         "python3", quacky_path,
         "-p1", policy_path,
@@ -101,12 +116,8 @@ def run_final_analysis(policy_path, timeout=2000):
         "-cr", response_file_path
     ]
 
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(timeout)
-
     try:
         result = subprocess.run(command, cwd=working_directory, capture_output=True, text=True)
-        signal.alarm(0)
 
         if result.returncode != 0 or "FATAL ERROR FROM ABC" in result.stderr:
             raise Exception("Quacky analysis failed")
@@ -116,14 +127,9 @@ def run_final_analysis(policy_path, timeout=2000):
         if result.stderr:
             logging.error(f"Errors: {result.stderr}")
         return result.stdout
-    except TimeoutError:
-        logging.error(f"Final analysis for policy {policy_path} timed out after {timeout} seconds.")
-        return "TIMEOUT"
     except Exception as e:
         logging.error(f"Error in final analysis: {str(e)}")
         return None
-    finally:
-        signal.alarm(0)
 
 
 def process_policy(policy_path, size, max_retries=5):
@@ -155,8 +161,8 @@ def process_policy(policy_path, size, max_retries=5):
                 raise Exception("Failed to generate regex")
 
             exp2_raw_output = run_final_analysis(policy_path)
-            if exp2_raw_output is None or exp2_raw_output == "TIMEOUT":
-                raise Exception("Final analysis failed or timed out")
+            if exp2_raw_output is None:
+                raise Exception("Final analysis failed")
 
             
             return {

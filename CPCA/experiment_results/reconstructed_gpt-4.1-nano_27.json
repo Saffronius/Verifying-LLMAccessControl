@@ -1,0 +1,50 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetBucketLocation",
+      "Resource": "arn:aws:s3:::*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::singlecomm.recordings",
+      "Condition": {
+        "StringEquals": {
+          "s3:prefix": [
+            "",
+            "0001/"
+          ]
+        },
+        "StringEqualsIgnoreCase": {
+          "s3:delimiter": "/"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::singlecomm.recordings",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": "0001/*"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::singlecomm.recordings/0001/*"
+      ]
+    }
+  ]
+}

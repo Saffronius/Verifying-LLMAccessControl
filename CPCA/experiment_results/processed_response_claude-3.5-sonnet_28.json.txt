@@ -1,0 +1,20 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowAllS3Actions",
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": "*"
+        },
+        {
+            "Sid": "DenyAccessToDirectory1",
+            "Effect": "Deny",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::madeupbucketname/Directory1/*",
+                "arn:aws:s3:::madeupbucketname/Directory1"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,55 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ListAllBuckets",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "ListBucketContents",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::my-bucket",
+            "Condition": {
+                "StringEquals": {
+                    "s3:prefix": [
+                        "",
+                        "home/",
+                        "home/Jas/"
+                    ],
+                    "s3:delimiter": [
+                        "/"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "DenyListingOtherFolders",
+            "Effect": "Deny",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::my-bucket",
+            "Condition": {
+                "StringNotLike": {
+                    "s3:prefix": [
+                        "",
+                        "home/",
+                        "home/Jas/*"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "AllowFullAccessToUserFolder",
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::my-bucket/home/Jas/*"
+            ]
+        }
+    ]
+}

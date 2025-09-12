@@ -18,13 +18,14 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 model_id = "ft:gpt-4o-mini-2024-07-18:personal::A5b7jUfX"
 
 # Define paths
-policy_folder = "Dataset"
-quacky_path = "quacky/src/quacky.py" # /Documents/quacky/
-working_directory = "quacky/src/"
-response_file_path = "quacky/src/response.txt"
+policy_folder = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/Prev-Experiments/Verifying-LLMAccessControl/Dataset"
+quacky_base_path = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/CPCA/quacky/src"
+quacky_path = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/CPCA/quacky/src/quacky.py"
+working_directory = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/CPCA/quacky/src/"
+response_file_path = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/CPCA/quacky/src/response.txt"
 result_table_path = "Exp-3/multi-string.csv"
-generated_policy_path = "quacky/src/gen_pol.json"
-p1_not_p2_models_path = "quacky/src/P1_not_P2.models"
+generated_policy_path = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/CPCA/quacky/src/gen_pol.json"
+p1_not_p2_models_path = "/home/ash/Desktop/VerifyingLLMGeneratedPolicies/CPCA/quacky/src/P1_not_P2.models"
 progress_file_path = "Exp-3/progress.json"
 
 MAX_RETRIES = 3

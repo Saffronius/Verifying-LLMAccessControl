@@ -1,0 +1,48 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowBucketLocationRetrieval",
+      "Effect": "Allow",
+      "Action": "s3:GetBucketLocation",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowRootLevelListing",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::examplebucket",
+      "Condition": {
+        "StringEquals": {
+          "s3:delimiter": "/"
+        },
+        "Null": {
+          "s3:prefix": "true"
+        }
+      }
+    },
+    {
+      "Sid": "AllowFolderListing",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::examplebucket",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "folder/*",
+            "folder"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AllowAllActionsInFolder",
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::examplebucket/folder",
+        "arn:aws:s3:::examplebucket/folder/*"
+      ]
+    }
+  ]
+}
