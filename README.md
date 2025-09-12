@@ -1,4 +1,4 @@
-# Verisynth: Large Language Model Synthesized Access Control Policy Verification
+# Large Language Model Synthesized Access Control Policy Verification
 
 ## Overview
 
